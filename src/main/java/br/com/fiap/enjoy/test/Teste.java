@@ -23,10 +23,14 @@ public class Teste {
 		
 		int telefoneUsuario = 119123456;
 		
-		String query1 = ultimaVisita(telefoneUsuario);
-		System.out.println(query1);
+		String ultimaVisita = ultimaVisita(telefoneUsuario);
+		System.out.println(ultimaVisita);
 		
-		estiloBebida(telefoneUsuario);
+		Preferida preferida = estiloBebida(telefoneUsuario);
+		System.out.println("Sua bebida preferida é a " + preferida.getBebida() +
+							", uma bebida do tipo " + preferida.getTipo() +
+							", e você a bebeu " + preferida.getQuantidade() +
+							" vezes.");
 		
 		
 	}
@@ -38,11 +42,10 @@ public class Teste {
 	// Data da última visita 
 	private static String ultimaVisita(int telefone) {
 		
-		String tel = String.valueOf(telefone); 
 		EntityManager em = Persistence.createEntityManagerFactory("desafio-enjoy").createEntityManager();
 		
 		Query q = em.createQuery("from Visita where n_telefone = :telefone order by dt_visita DESC");
-		q.setParameter("telefone", tel);
+		q.setParameter("telefone", telefone);
 		q.setMaxResults(1);
 		List<Visita> results = q.getResultList();
 		em.close();
@@ -61,8 +64,35 @@ public class Teste {
 		
 	//}
 	
-	// bebida e estilo
-	private static void estiloBebida(int telefone) {
+	
+	
+	// Bebida preferida, estilo e quantidade
+	
+	private static class Preferida {
+	    private String bebida;
+	    private String quantidade;
+	    private String tipo;
+	    
+	    public Preferida(String bebida, String quantidade, String tipo) {
+	    	this.bebida = bebida;
+	    	this.quantidade = quantidade;
+	    	this.tipo = tipo;
+	    }
+	    
+	    public String getBebida() {
+			return bebida;
+		}
+	    
+	    public String getTipo() {
+			return tipo;
+		}
+	    
+	    public String getQuantidade() {
+	    	return quantidade;
+	    }
+	}
+	
+	private static Preferida estiloBebida(int telefone) {
 	
 		String tel = String.valueOf(telefone); 
 		EntityManager em = Persistence.createEntityManagerFactory("desafio-enjoy").createEntityManager();
@@ -102,8 +132,19 @@ public class Teste {
 						   .get()
 						   .getValue();
 		
-		System.out.println("A sua bebida preferida é " + bebidaPreferida + ", e você a consumiu " + qtdBebida + " vezes.");
+		Query q2 = em.createQuery("from Bebida where cd_bebida = :cdbebida");
+		q2.setParameter("cdbebida", bebidaPreferida);
+		q2.setMaxResults(1);
+		List<Bebida> resultados = q2.getResultList();
 		
+		String nomeBebida = resultados.get(0).getNomeBebida();
+		String tipoBebida = resultados.get(0).getTipoBebida();
+		String quantidade = qtdBebida.toString();
+		
+		Preferida preferida = new Preferida(nomeBebida, quantidade, tipoBebida);
+		em.close();
+		
+		return preferida;
 		
 	}
 	
