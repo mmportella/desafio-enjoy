@@ -29,7 +29,7 @@
 
 		<property name="javax.persistence.jdbc.user" value="marcelo@smartcities" />
 
-		<property name="javax.persistence.jdbc.password" value="" />
+		<property name="javax.persistence.jdbc.password" value="FiapSmartCities2022" />
 		
 	</properties>
 	
